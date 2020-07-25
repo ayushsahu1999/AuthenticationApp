@@ -1,28 +1,121 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-
 <head>
     <meta charset="utf-8">
     <title>Auth System</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="stylesheets/style.css">
 </head>
-
 <body>
     <div class="container">
-        <h3>Auth App</h3>
-        <form action="submit">
-            <div class="username">
-                <label for="username">Name</label>
-                <input type="text" placeholder="username">
-            </div>
-            <div class="pwd">
-                <label for="username">Password</label>
-                <input type="text" placeholder="password">
-            </div>
-            <button class="btn btn-primary">confirm password</button>
-        </form>
+        <h3 class="heading text-center">Auth App</h3>
+        
+        <div class="tab text-center">
+            <button class="tablinks" onclick="openCity(event, 'London')" id="defaultOpen">Login</button>
+            <button class="tablinks" onclick="openCity(event, 'Paris')">Register</button>
+        </div>
+
+        <div id="London" class="tabcontent">
+            <form class="login-form">
+                <div class="username">
+                    <label for="username">Name</label>
+                    <input type="text" class="name" placeholder="username">
+                </div>
+                <div class="pwd">
+                    <label for="password">Password</label>
+                    <input type="text" class="password" placeholder="password">
+                </div>
+                <div class="text-center loginBtn">
+                    <button class="btn btn-primary">Login</button>
+                    <div>Not registered? Register first.</div>
+                </div>
+            </form>
+        </div>
+        <div class="tabcontent" id="Paris">
+            <form class="register-form">
+                <div class="username">
+                    <label for="username">Username</label>
+                    <input type="text" class="registered-name" placeholder="username">
+                </div>
+                <div class="pwd">
+                    <label for="password">New Password</label>
+                    <input type="text" class="registered-password" placeholder="password">
+                </div>
+                <div class="text-center registerBtn">
+                <button class="btn btn-warning">Register</button>
+                </div>
+            </form>
+        </div>
     </div>
-    <script src="script.js"></script>
-</body>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"> </script>
+    <script type="text/javascript">
+    
+    document.getElementById("defaultOpen").click();
+
+        function openCity(evt, cityName) {
+                var i, tabcontent, tablinks
+            
+                // Get all elements with class="tabcontent" and hide them
+                tabcontent = document.getElementsByClassName("tabcontent");
+                for (i = 0; i < tabcontent.length; i++) {
+                    tabcontent[i].style.display = "none";
+                }
+
+                // Get all elements with class="tablinks" and remove the class "active"
+                tablinks = document.getElementsByClassName("tablinks");
+                for (i = 0; i < tablinks.length; i++) {
+                    tablinks[i].className = tablinks[i].className.replace(" active", "");
+                }
+
+                // Show the current tab, and add an "active" class to the button that opened the tab
+                document.getElementById(cityName).style.display = "block";
+                evt.currentTarget.className += " active";
+            }
+
+        $('.login-form').on('submit',function(e) {
+            e.preventDefault()
+            var name = $('.name').val()
+            var password = $('.password').val()
+            
+            fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({name, password})
+                })
+                .then(response => response.json())
+                .then((response) => {
+                    if ('error' in response) {
+                        return alert(response.error)
+                    }
+                    location.href = response.redirectUrl
+                })
+                .catch(err=> console.log(err) )   
+            
+        })
+        
+        $('.register-form').on('submit', function(e){
+            e.preventDefault()
+            var name = $('.registered-name').val()
+            var password = $('.registered-password').val()
+
+            fetch('/register', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, password })
+            })
+                .then(response => response.json())
+                .then((response) => {
+                    location.href = response.redirectUrl
+                })
+                .catch(err => console.log(err)) 
+        })
+    </script>
+</body> 
 </html>
