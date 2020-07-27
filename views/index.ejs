@@ -11,11 +11,11 @@
         <h3 class="heading text-center">Auth App</h3>
         
         <div class="tab text-center">
-            <button class="tablinks" onclick="openCity(event, 'London')" id="defaultOpen">Login</button>
-            <button class="tablinks" onclick="openCity(event, 'Paris')">Register</button>
+            <button class="tablinks" onclick="openCity(event, 'Login')" id="defaultOpen">Login</button>
+            <button class="tablinks" onclick="openCity(event, 'Register')">Register</button>
         </div>
 
-        <div id="London" class="tabcontent">
+        <div id="Login" class="tabcontent">
             <form class="login-form">
                 <div class="username">
                     <label for="username">Name</label>
@@ -31,7 +31,7 @@
                 </div>
             </form>
         </div>
-        <div class="tabcontent" id="Paris">
+        <div class="tabcontent" id="Register">
             <form class="register-form">
                 <div class="username">
                     <label for="username">Username</label>
@@ -57,9 +57,9 @@
                 var i, tabcontent, tablinks
             
                 // Get all elements with class="tabcontent" and hide them
-                tabcontent = document.getElementsByClassName("tabcontent");
+                tabcontent = document.getElementsByClassName("tabcontent")
                 for (i = 0; i < tabcontent.length; i++) {
-                    tabcontent[i].style.display = "none";
+                    tabcontent[i].style.display = "none"
                 }
 
                 // Get all elements with class="tablinks" and remove the class "active"
@@ -112,6 +112,8 @@
             })
                 .then(response => response.json())
                 .then((response) => {
+  
+                    // `location.href = '/home'` navigates to the home route.
                     location.href = response.redirectUrl
                 })
                 .catch(err => console.log(err)) 
