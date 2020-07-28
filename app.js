@@ -6,7 +6,7 @@ var session = require('express-session')
 const mongoose = require('mongoose')
 let isloggedIn = false
 
-mongoose.connect('mongodb+srv://ShriyaMadan:jorsebolojaimatadi@cluster0.e8h0z.mongodb.net/test?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb+srv://<user>:<password>@cluster0.e8h0z.mongodb.net/<dbname>?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true })
 var db = mongoose.connection
 
 db.on('error', console.error.bind(console, 'connection error:'));
