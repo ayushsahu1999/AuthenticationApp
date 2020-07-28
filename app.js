@@ -4,11 +4,10 @@ var path = require('path')
 var cookieParser = require('cookie-parser')
 var session = require('express-session')
 const mongoose = require('mongoose')
-const Schema = mongoose.Schema
 let isloggedIn = false
-mongoose.connect('mongodb+srv://ShriyaMadan:jorsebolojaimatadi@cluster0.e8h0z.mongodb.net/test?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true })
 
-var db = mongoose.connection;
+mongoose.connect('mongodb+srv://ShriyaMadan:jorsebolojaimatadi@cluster0.e8h0z.mongodb.net/test?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true })
+var db = mongoose.connection
 
 db.on('error', console.error.bind(console, 'connection error:'));
 
@@ -20,19 +19,12 @@ var userdata = new mongoose.Schema({
   username: { type: String, required: true },
   password: { type: String, required: true }
 })
-var datum = mongoose.model("auth-app",userdata);
 
-const users = [{ id: 1,name: 'sia',password: '1234'},
-              { id: 2,name: 'shu',password: 'shu'},
-              { id: 3, name: 'zec',password: 'zec'}];
+var authModel = mongoose.model("authModel",userdata);
 
-const redirectHome= (req,res,next)=>{
-  if(req.session.isloggedIn===true){
-    res.redirect('/home')
-  }else{
-    next()
-  }
-}
+// const users = [{ id: 1,name: 'sia',password: '1234'},
+//               { id: 2,name: 'shu',password: 'shu'}];
+
 const redirectLogin = (req, res, next) => {
   if (req.session.isloggedIn===false) {
     return res.render('index')
@@ -58,23 +50,54 @@ app.get('/check-login', (req, res) => {
 
 app.post('/login', function(req,res){
   const {name, password} = req.body
-  const user = users.find((u) => u.name === name && u.password === password)
-  
-  if(null != user){   
-   req.session.isloggedIn = true   
-  } else {
-   return res.send({error: 'Invalid Credentials.'})
+  const myData = {
+    username: req.body.name,
+    password: req.body.password
   }
-  res.send({redirectUrl: '/home'})
+  authModel.exists(myData,(error,result)=>{
+    if (error){
+      console.log(error)
+    } else{
+      //console.log("result:",result)
+      if (result === true) { 
+        req.session.isloggedIn = true  
+        res.send({ redirectUrl: '/home' })
+      }else{
+        return res.send({ error: 'Invalid Credentials.' })
+      }
+    }
+  })
+  //const user = users.find((u) => u.name === name && u.password === password)
+  // if(null != user){   
+  //  req.session.isloggedIn = true   
+  // } else {
+  //  return res.send({error: 'Invalid Credentials.'})
+  // }
 })
 
-app.post('/register', function(req,res){
-  //console.log("req.body", req.body)
-  console.log("users", users)
+app.post('/register', async function(req,res){
   const { name, password } = req.body
-  myobject = { name, password }
+  
+  const myData = {username: name, 
+                  password: password}
+
+  const newauthModel = new authModel(myData)
+  const doesUserExists = await authModel.exists(myData)
+  console.log(doesUserExists);
+
+  if(doesUserExists===false){
+    newauthModel.save((error)=>{
+      if(error){
+        console.log("error:",error)
+      } else{
+        console.log("We recieved your data!");
+      }
+    })
+  } 
+  else{
+    console.log("User already exists!")
+  }
   req.session.isloggedIn = true
-  users.push(myobject)
   res.send({ redirectUrl: '/home' })
 })
 
@@ -87,10 +110,6 @@ app.get('/logout', (req, res) => {
   req.session.isloggedIn = false
   res.redirect('/')
 })
-
-
-
-
 
 const port = "3000" || process.env.PORT
 app.listen(port,()=>{
