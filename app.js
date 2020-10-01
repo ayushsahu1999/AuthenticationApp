@@ -4,6 +4,7 @@ var path = require('path')
 var cookieParser = require('cookie-parser')
 var session = require('express-session')
 const mongoose = require('mongoose')
+const bodyParser = require('body-parser')
 let isloggedIn = false
 
 mongoose.connect('mongodb+srv://<user>:<password>@cluster0.e8h0z.mongodb.net/<dbname>?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true })
@@ -39,6 +40,9 @@ app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(session({ secret: "shriyashriya", saveUninitialized: true, resave: false}))
 app.use(express.static(path.join(__dirname, 'public')))
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 
 app.get('/', function (req, res) {
   res.redirect('/home')
